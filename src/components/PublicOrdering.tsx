@@ -303,7 +303,10 @@ export default function PublicOrdering({ restaurantCode, tableId, isOnline }: Pr
   const handlePlaceOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     if (cart.length === 0) return;
-    if (!customerName.trim() || !customerPhone.trim()) {
+    const finalCustomerName = customerName.trim() || (tableId ? `Table ${tableId} Guest` : '');
+    const finalCustomerPhone = customerPhone.trim() || (tableId ? '0000000000' : '');
+
+    if (!finalCustomerName || (!tableId && !finalCustomerPhone)) {
       alert('Please enter your name and phone number.');
       return;
     }
@@ -371,9 +374,9 @@ export default function PublicOrdering({ restaurantCode, tableId, isOnline }: Pr
       if (tableId) {
         const { error } = await supabase.from('self_orders').insert({
           app_user_id: tenantId,
-          table_id: tableId,
-          customer_name: customerName,
-          customer_phone: customerPhone,
+          table_id: String(tableId),
+          customer_name: finalCustomerName,
+          customer_phone: finalCustomerPhone,
           items: cart.map(item => ({
             menuItem: {
               id: item.menuItem.id,
@@ -453,7 +456,12 @@ export default function PublicOrdering({ restaurantCode, tableId, isOnline }: Pr
       setCart([]);
     } catch (err: any) {
       console.error('Order Placement Error:', err);
-      alert('Failed to place order. Please try again.');
+      const errMsg = err?.message || '';
+      if (errMsg.includes('row-level security') || err?.code === '42501') {
+        alert('Database permission error: self_orders RLS policy is not configured in Supabase. Please run the SQL migration.');
+      } else {
+        alert(errMsg || 'Failed to place order. Please try again.');
+      }
     } finally {
       setPlacingOrder(false);
     }
@@ -552,7 +560,7 @@ export default function PublicOrdering({ restaurantCode, tableId, isOnline }: Pr
               type="text"
               inputMode="numeric"
               maxLength={3}
-              placeholder="&#8226; &#8226; &#8226;"
+              placeholder="• • •"
               value={pin}
               autoFocus
               onChange={(e) => setPin(e.target.value.replace(/\D/g, ''))}
@@ -656,7 +664,7 @@ export default function PublicOrdering({ restaurantCode, tableId, isOnline }: Pr
                           <span className="font-bold text-sm text-gray-800 leading-tight line-clamp-2">{item.name}</span>
                         </div>
                         <div className="flex items-center gap-2 mt-0.5">
-                          <span className="text-[15px] font-black text-gray-900">&#8377;{item.price.toFixed(2)}</span>
+                          <span className="text-[15px] font-black text-gray-900">₹{item.price.toFixed(2)}</span>
                           {hasActiveVariants && (
                             <span className="text-[10px] text-orange-500 font-bold bg-orange-50 px-2 py-0.5 rounded-full border border-orange-100">Options</span>
                           )}
@@ -730,7 +738,7 @@ export default function PublicOrdering({ restaurantCode, tableId, isOnline }: Pr
                           <span className="font-bold text-sm text-gray-800 leading-tight line-clamp-2">{item.name}</span>
                         </div>
                         <div className="flex items-center gap-2 mt-0.5">
-                          <span className="text-[15px] font-black text-gray-900">&#8377;{item.price.toFixed(2)}</span>
+                          <span className="text-[15px] font-black text-gray-900">₹{item.price.toFixed(2)}</span>
                           {hasActiveVariants && (
                             <span className="text-[10px] text-orange-500 font-bold bg-orange-50 px-2 py-0.5 rounded-full border border-orange-100">Options</span>
                           )}
@@ -811,7 +819,7 @@ export default function PublicOrdering({ restaurantCode, tableId, isOnline }: Pr
                         </button>
                       </div>
                       <div className="text-sm font-black text-gray-800 shrink-0 min-w-[56px] text-right">
-                        &#8377;{(item.menuItem.price * item.quantity).toFixed(2)}
+                        ₹{(item.menuItem.price * item.quantity).toFixed(2)}
                       </div>
                     </div>
                   ))}
@@ -829,22 +837,22 @@ export default function PublicOrdering({ restaurantCode, tableId, isOnline }: Pr
                         className={`flex-1 py-2.5 rounded-xl text-sm font-black uppercase tracking-wide transition-all cursor-pointer ${
                           orderType === 'delivery' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500 active:text-gray-700'
                         }`}>
-                        &#x1F69A; Delivery
+                        🚚 Delivery
                       </button>
                       <button type="button" onClick={() => setOrderType('takeaway')}
                         className={`flex-1 py-2.5 rounded-xl text-sm font-black uppercase tracking-wide transition-all cursor-pointer ${
                           orderType === 'takeaway' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500 active:text-gray-700'
                         }`}>
-                        &#x1F6CD; Takeaway
+                        🛍️ Takeaway
                       </button>
                     </div>
                   )}
 
-                  <input type="text" required placeholder="Your Name" value={customerName}
+                  <input type="text" required={!tableId} placeholder={tableId ? "Your Name (Optional)" : "Your Name"} value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
                     className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-2xl text-sm font-medium text-gray-800 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/10 placeholder:text-gray-400 transition-all" />
 
-                  <input type="tel" inputMode="numeric" maxLength={10} required placeholder="10-Digit Mobile Number"
+                  <input type="tel" inputMode="numeric" maxLength={10} required={!tableId} placeholder={tableId ? "10-Digit Mobile Number (Optional)" : "10-Digit Mobile Number"}
                     value={customerPhone} onChange={(e) => setCustomerPhone(e.target.value.replace(/\D/g, ''))}
                     className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-2xl text-sm font-medium text-gray-800 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/10 placeholder:text-gray-400 transition-all" />
 
@@ -871,7 +879,7 @@ export default function PublicOrdering({ restaurantCode, tableId, isOnline }: Pr
                         className="w-full py-4 bg-gradient-to-r from-blue-500 to-blue-600 active:from-blue-600 active:to-blue-700 text-white text-center rounded-2xl text-sm font-black uppercase tracking-wide shadow-md transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
                         {placingOrder ? (
                           <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        ) : '&#x26A1; Pay via UPI (GPay / PhonePe / Paytm)'}
+                        ) : '⚡ Pay via UPI (GPay / PhonePe / Paytm)'}
                       </button>
                       <div className="hidden sm:flex justify-center">
                         <div className="p-3 bg-white rounded-xl border border-gray-200 shadow-inner">
@@ -889,7 +897,7 @@ export default function PublicOrdering({ restaurantCode, tableId, isOnline }: Pr
                   {/* Total Row */}
                   <div className="flex justify-between items-center py-2 border-t border-gray-100">
                     <span className="text-sm text-gray-500 font-black uppercase tracking-wide">Total</span>
-                    <span className="text-xl font-black text-gray-900">&#8377;{cartSubtotal.toFixed(2)}</span>
+                    <span className="text-xl font-black text-gray-900">₹{cartSubtotal.toFixed(2)}</span>
                   </div>
 
                   {/* Table Order Submit */}
@@ -898,7 +906,7 @@ export default function PublicOrdering({ restaurantCode, tableId, isOnline }: Pr
                       className="w-full py-4 bg-gradient-to-r from-orange-500 to-rose-600 active:from-orange-600 active:to-rose-700 text-white font-black rounded-2xl text-base shadow-lg shadow-orange-500/20 transition-all cursor-pointer flex justify-center items-center gap-2 active:scale-95 border border-white/5">
                       {placingOrder ? (
                         <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      ) : '&#x1F37D;&#xFE0F; Place Order & Send to Kitchen'}
+                      ) : '🍽️ Place Order & Send to Kitchen'}
                     </button>
                   )}
                 </form>
@@ -1239,7 +1247,7 @@ export default function PublicOrdering({ restaurantCode, tableId, isOnline }: Pr
                   className="w-full flex justify-between items-center p-4 rounded-2xl border border-gray-200 active:border-orange-500 active:bg-orange-50/40 transition-all cursor-pointer"
                 >
                   <span className="font-bold text-sm text-gray-700">{v.name}</span>
-                  <span className="font-black text-sm text-orange-600">&#8377;{Number(v.price).toFixed(2)}</span>
+                  <span className="font-black text-sm text-orange-600">₹{Number(v.price).toFixed(2)}</span>
                 </button>
               ))}
             </div>
