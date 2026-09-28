@@ -124,7 +124,7 @@ export function useAppSetup() {
     }
   }, [isAppLocked, activeTab, setActiveTab]);
 
-  // --- New user trial setup ---
+  // --- New user trial setup (3 Days Free Trial) ---
   useEffect(() => {
     const checkSubscriptionOnLoad = async () => {
       if (!premiumState.loading && premiumState.settings) {

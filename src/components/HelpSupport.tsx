@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Mail, Phone, MessageSquare, Send, Sparkles, AlertCircle, HelpCircle, CheckCircle2, ShieldCheck, Clock, ChevronDown, ChevronUp, MessageCircle } from 'lucide-react';
 import { useToast } from './Toast';
+import { db } from '../db';
 import { supabase } from '../supabase';
 import { logger } from '../utils/logger';
 
@@ -101,20 +102,10 @@ export default function HelpSupport() {
         userId = session?.user?.id || '';
       }
 
-      // Fetch restaurant settings to get code and name
-      const { data: settingsData } = await supabase
-        .from('settings')
-        .select('data')
-        .eq('app_user_id', userId)
-        .eq('id', 'global')
-        .maybeSingle();
-
-      let restCode = 'UNKNOWN';
-      let restName = 'Unknown Restaurant';
-      if (settingsData && settingsData.data) {
-        restCode = settingsData.data.restaurantCode || 'UNKNOWN';
-        restName = settingsData.data.restaurantName || 'Unknown Restaurant';
-      }
+      // Fetch restaurant profile to get code and name
+      const profile = await db.restaurantProfile.get('global');
+      const restCode = profile?.restaurantCode || 'UNKNOWN';
+      const restName = profile?.restaurantName || 'Unknown Restaurant';
 
       const priority = issueType === 'bug' ? 'high' : issueType === 'printer' ? 'high' : 'medium';
       
@@ -152,7 +143,7 @@ export default function HelpSupport() {
 
       const formattedText = `*POS SUPPORT TICKET*\n-----------------------------\n*Name:* ${name}\n*Contact Info:* ${email || 'Not Provided'}\n*Subject:* ${subject}\n*Issue Type:* ${typeLabel}\n*Message:* \n"${message}"\n-----------------------------\nSent via Restaurant POS Support Form`;
 
-      const whatsappUrl = `https://wa.me/918677994666?text=${encodeURIComponent(formattedText)}`;
+      const whatsappUrl = `https://wa.me/917564876666?text=${encodeURIComponent(formattedText)}`;
       window.open(whatsappUrl, '_blank');
       showToast('Support ticket sent via WhatsApp!', 'success');
     } finally {
@@ -480,7 +471,7 @@ export default function HelpSupport() {
               
               {/* WhatsApp Card */}
               <a
-                href="https://wa.me/918677994666?text=Hi%20Guddu,%20I%20need%20support%20with%20POS%20System"
+                href="https://wa.me/917564876666?text=Hi,%20I%20need%20support%20with%20Siya%20Bill%20POS"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group flex items-center gap-4 p-4 border border-green-100 dark:border-green-900/40 hover:border-green-300 dark:hover:border-green-700 hover:bg-green-50/40 dark:hover:bg-green-950/20 rounded-2xl transition-all shadow-sm shadow-green-50/20 dark:shadow-none"
@@ -490,35 +481,35 @@ export default function HelpSupport() {
                 </div>
                 <div>
                   <div className="font-black text-sm text-gray-800 dark:text-slate-200 transition-colors">WhatsApp Support</div>
-                  <div className="text-xs font-bold text-green-600 dark:text-green-400 mt-0.5">+91 86779 94666</div>
+                  <div className="text-xs font-bold text-green-600 dark:text-green-400 mt-0.5">+91 75648 76666</div>
                 </div>
               </a>
 
               {/* Email Card */}
               <a
-                href="mailto:gudduk483@gmail.com?subject=Restaurant%20POS%20Support%20Request"
+                href="mailto:siyabill90@gmail.com?subject=Restaurant%20POS%20Support%20Request"
                 className="group flex items-center gap-4 p-4 border border-blue-100 dark:border-blue-900/40 hover:border-blue-300 dark:hover:border-blue-700 hover:bg-blue-50/40 dark:hover:bg-blue-950/20 rounded-2xl transition-all shadow-sm shadow-blue-50/20 dark:shadow-none"
               >
                 <div className="w-12 h-12 rounded-xl bg-blue-100 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 flex items-center justify-center shadow-inner dark:shadow-none group-hover:scale-110 transition-transform">
                   <Mail size={22} className="text-blue-500" />
                 </div>
                 <div>
-                  <div className="font-black text-sm text-gray-800 dark:text-slate-200 transition-colors">Email Developer</div>
-                  <div className="text-xs font-bold text-blue-600 dark:text-blue-400 mt-0.5">gudduk483@gmail.com</div>
+                  <div className="font-black text-sm text-gray-800 dark:text-slate-200 transition-colors">Support Email</div>
+                  <div className="text-xs font-bold text-blue-600 dark:text-blue-400 mt-0.5">siyabill90@gmail.com</div>
                 </div>
               </a>
 
               {/* Call Card */}
               <a
-                href="tel:+918677994666"
+                href="tel:+917564876666"
                 className="group flex items-center gap-4 p-4 border border-indigo-100 dark:border-indigo-900/40 hover:border-indigo-300 dark:hover:border-indigo-700 hover:bg-indigo-50/40 dark:hover:bg-indigo-950/20 rounded-2xl transition-all shadow-sm shadow-indigo-50/20 dark:shadow-none"
               >
                 <div className="w-12 h-12 rounded-xl bg-indigo-100 dark:bg-indigo-950/30 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shadow-inner dark:shadow-none group-hover:scale-110 transition-transform">
                   <Phone size={22} className="text-indigo-500" />
                 </div>
                 <div>
-                  <div className="font-black text-sm text-gray-800 dark:text-slate-200 transition-colors">Guddu Kumar Kushwaha</div>
-                  <div className="text-xs font-bold text-indigo-600 dark:text-indigo-400 mt-0.5">Call: +91 86779 94666</div>
+                  <div className="font-black text-sm text-gray-800 dark:text-slate-200 transition-colors">Siya Bill Helpline</div>
+                  <div className="text-xs font-bold text-indigo-600 dark:text-indigo-400 mt-0.5">Call: +91 75648 76666</div>
                 </div>
               </a>
 

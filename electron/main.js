@@ -372,3 +372,13 @@ app.on('before-quit', () => {
   // WhatsApp Server shutdown call removed
 });
 
+// Global error handlers to prevent silent process crashes
+process.on('uncaughtException', (err) => {
+  log.error('[Electron Main] Uncaught Exception:', err);
+});
+
+process.on('unhandledRejection', (reason) => {
+  log.error('[Electron Main] Unhandled Rejection:', reason);
+});
+
+

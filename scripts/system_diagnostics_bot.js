@@ -46,10 +46,11 @@ async function runDiagnostics() {
   totalTests++;
   console.log(`${colors.bright}${colors.blue}[TEST 1/5] Auditing Local Environment & Folders...${colors.reset}`);
   try {
+    const rootDir = path.resolve(__dirname, '..');
     const requiredDirs = ['src', 'electron', 'supabase', 'public'];
     let dirOk = true;
     for (const dir of requiredDirs) {
-      if (!fs.existsSync(path.join(__dirname, dir))) {
+      if (!fs.existsSync(path.join(rootDir, dir))) {
         dirOk = false;
         failures.push(`Folder missing: /${dir}`);
       }
@@ -59,7 +60,7 @@ async function runDiagnostics() {
     const requiredFiles = ['package.json', 'tsconfig.json', 'vite.config.ts', '.env'];
     let fileOk = true;
     for (const f of requiredFiles) {
-      if (!fs.existsSync(path.join(__dirname, f))) {
+      if (!fs.existsSync(path.join(rootDir, f))) {
         fileOk = false;
         failures.push(`Critical config file missing: ${f}`);
       }
@@ -194,9 +195,10 @@ async function runDiagnostics() {
   totalTests++;
   console.log(`${colors.bright}${colors.blue}[TEST 4/5] Pinging Supabase Cloud REST APIs...${colors.reset}`);
   try {
+    const rootDir = path.resolve(__dirname, '..');
     let rawEnv = '';
-    if (fs.existsSync(path.join(__dirname, '.env'))) {
-      rawEnv = fs.readFileSync(path.join(__dirname, '.env'), 'utf8');
+    if (fs.existsSync(path.join(rootDir, '.env'))) {
+      rawEnv = fs.readFileSync(path.join(rootDir, '.env'), 'utf8');
     }
 
     const dbUrlMatch = rawEnv.match(/VITE_SUPABASE_URL=(.+)/);
@@ -253,8 +255,9 @@ async function runDiagnostics() {
   totalTests++;
   console.log(`${colors.bright}${colors.blue}[TEST 5/5] Checking Compilation & Build Outputs...${colors.reset}`);
   try {
-    const distIndex = path.join(__dirname, 'dist', 'index.html');
-    const adminDistIndex = path.join(__dirname, 'admin-portal', 'dist', 'index.html');
+    const rootDir = path.resolve(__dirname, '..');
+    const distIndex = path.join(rootDir, 'dist', 'index.html');
+    const adminDistIndex = path.join(rootDir, 'admin-portal', 'dist', 'index.html');
     
     let outputsFound = true;
     if (fs.existsSync(distIndex)) {

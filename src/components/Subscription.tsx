@@ -35,9 +35,9 @@ export default function Subscription({
   const [pendingRequest, setPendingRequest] = useState<any>(null);
 
   // Dynamic Admin UPI settings states
-  const [upiId1, setUpiId1] = useState('8677994666@upi');
+  const [upiId1, setUpiId1] = useState('7564876666@upi');
   const [upiId2, setUpiId2] = useState('gudduk483@okaxis');
-  const [selectedUpiId, setSelectedUpiId] = useState('8677994666@upi');
+  const [selectedUpiId, setSelectedUpiId] = useState('7564876666@upi');
 
   const { settings, isTrial, isExpired, daysLeft } = subscriptionState;
 
@@ -61,9 +61,9 @@ export default function Subscription({
 
   // Load dynamic pricing and features from Supabase
   const [plans, setPlans] = useState<any>({
-    monthly: { price: 999, features: ['Quick Billing & KOT', 'KDS & Stock Manager', 'Realtime Cloud Sync'] },
-    halfYearly: { price: 4999, features: ['Quick Billing & KOT', 'KDS & Stock Manager', 'Realtime Cloud Sync'] },
-    yearly: { price: 7999, features: ['Quick Billing & KOT', 'KDS & Stock Manager', 'Realtime Cloud Sync'] }
+    monthly: { price: 149, features: ['Quick Billing & KOT', 'KDS & Stock Manager', 'Realtime Cloud Sync'] },
+    halfYearly: { price: 599, features: ['Quick Billing & KOT', 'KDS & Stock Manager', 'Realtime Cloud Sync'] },
+    yearly: { price: 999, features: ['Quick Billing & KOT', 'KDS & Stock Manager', 'Realtime Cloud Sync'] }
   });
   const [dynamicPlans, setDynamicPlans] = useState<any[]>([]);
 
@@ -354,7 +354,7 @@ export default function Subscription({
           .maybeSingle();
 
         if (!error && data && data.data) {
-          const u1 = data.data.upi_id_1 || '8677994666@upi';
+          const u1 = data.data.upi_id_1 || '7564876666@upi';
           const u2 = data.data.upi_id_2 || 'gudduk483@okaxis';
           setUpiId1(u1);
           setUpiId2(u2);
@@ -497,7 +497,7 @@ export default function Subscription({
                   We are currently verifying your transaction with UTR <strong className="font-mono bg-amber-500/10 px-1.5 py-0.5 rounded text-amber-900 dark:text-amber-200">{pendingRequest.utr}</strong> for the <strong>{pendingRequest.plan_name}</strong>. Premium features will activate automatically once the admin matches it (usually 15-30 mins).
                 </p>
                 <p className="text-[10px] font-bold mt-1 opacity-75">
-                  Requested at: {new Date(pendingRequest.created_at).toLocaleString()} | For support: +91 86779 94666
+                  Requested at: {new Date(pendingRequest.created_at).toLocaleString()} | For support: +91 75648 76666
                 </p>
               </div>
             </div>
@@ -540,7 +540,7 @@ export default function Subscription({
                     Dismiss & Try Again
                   </button>
                   <a
-                    href="https://wa.me/918677994666?text=Hi%20Guddu,%20my%20payment%20request%20with%20UTR%20was%20rejected"
+                    href="https://wa.me/917564876666?text=Hi,%20my%20payment%20request%20with%20UTR%20was%20rejected"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="px-4 py-2 bg-slate-800 hover:bg-slate-750 text-slate-200 rounded-xl text-xs font-black uppercase tracking-wider transition-all active:scale-95 border border-slate-700"
@@ -630,7 +630,7 @@ export default function Subscription({
                     Monthly
                   </div>
                   <div>
-                    <span className="text-3xl font-black text-gray-800 dark:text-slate-100">₹{plans.monthly?.price ?? 999}</span>
+                    <span className="text-3xl font-black text-gray-800 dark:text-slate-100">₹{plans.monthly?.price ?? 149}</span>
                     <span className="text-xs font-bold text-gray-500 dark:text-slate-400"> / Month</span>
                   </div>
                   <p className="text-xs text-gray-400 dark:text-slate-500 font-semibold leading-relaxed">
@@ -649,7 +649,7 @@ export default function Subscription({
                       setSelectedPlanForPayment({
                         id: 'monthly',
                         name: 'Monthly Plan',
-                        price: plans.monthly?.price ?? 999,
+                        price: plans.monthly?.price ?? 149,
                         duration_days: 30
                       });
                       setPaymentMethodChoice('options');
@@ -667,11 +667,11 @@ export default function Subscription({
                     6 Months
                   </div>
                   <div>
-                    <span className="text-3xl font-black text-gray-800 dark:text-slate-100">₹{plans.halfYearly?.price ?? 4999}</span>
+                    <span className="text-3xl font-black text-gray-800 dark:text-slate-100">₹{plans.halfYearly?.price ?? 599}</span>
                     <span className="text-xs font-bold text-gray-500 dark:text-slate-400"> / Plan</span>
                   </div>
                   <p className="text-xs text-gray-400 dark:text-slate-500 font-semibold leading-relaxed">
-                    Save ~16% compared to monthly. Ideal for active local bistros.
+                    Save ~33% compared to monthly. Ideal for active local bistros.
                   </p>
                   <div className="border-t border-gray-50 dark:border-slate-800/50 pt-4 flex flex-col gap-2.5 mt-auto">
                     {(plans.halfYearly?.features || []).map((feat: string, idx: number) => (
@@ -686,7 +686,7 @@ export default function Subscription({
                       setSelectedPlanForPayment({
                         id: 'half-yearly',
                         name: '6 Months Plan',
-                        price: plans.halfYearly?.price ?? 4999,
+                        price: plans.halfYearly?.price ?? 599,
                         duration_days: 180
                       });
                       setPaymentMethodChoice('options');
@@ -707,11 +707,11 @@ export default function Subscription({
                     Yearly Plan
                   </div>
                   <div>
-                    <span className="text-3xl font-black">₹{plans.yearly?.price ?? 7999}</span>
+                    <span className="text-3xl font-black">₹{plans.yearly?.price ?? 999}</span>
                     <span className="text-xs font-bold text-gray-300"> / Year</span>
                   </div>
                   <p className="text-xs text-gray-400 font-semibold leading-relaxed">
-                    Save ~55%! Full long-term premium support and lifetime stability.
+                    Save ~45%! Full long-term premium support and maximum value.
                   </p>
                   <div className="border-t border-white/10 pt-4 flex flex-col gap-2.5 mt-auto">
                     {(plans.yearly?.features || []).map((feat: string, idx: number) => (
@@ -726,7 +726,7 @@ export default function Subscription({
                       setSelectedPlanForPayment({
                         id: 'yearly',
                         name: 'Yearly Plan',
-                        price: plans.yearly?.price ?? 7999,
+                        price: plans.yearly?.price ?? 999,
                         duration_days: 365
                       });
                       setPaymentMethodChoice('options');
@@ -751,7 +751,7 @@ export default function Subscription({
               <div>
                 <h4 className="font-bold text-gray-700 dark:text-slate-300 transition-colors">Q: How do I purchase a license key?</h4>
                 <p className="mt-1">
-                  Copy your unique <strong>Restaurant Code</strong> on the right sidebar and send it to our official distributor via WhatsApp (+91 86779 94666). Make the payment and they will instantly generate your license activation key.
+                  Copy your unique <strong>Restaurant Code</strong> on the right sidebar and send it to our official distributor via WhatsApp (+91 75648 76666). Make the payment and they will instantly generate your license activation key.
                 </p>
               </div>
               <div className="mt-2 border-t border-gray-50 dark:border-slate-800/50 pt-3">
@@ -869,7 +869,7 @@ export default function Subscription({
 
           {/* Quick Support Call */}
           <a
-            href="https://wa.me/918677994666?text=Hi%20Guddu,%20I%20want%20to%20purchase%20POS%20license"
+            href="https://wa.me/917564876666?text=Hi,%20I%20want%20to%20purchase%20POS%20license"
             target="_blank"
             rel="noopener noreferrer"
             className="p-5 bg-green-50 dark:bg-green-950/20 border border-green-100 dark:border-green-900/40 hover:border-green-300 dark:hover:border-green-700 hover:bg-green-100/30 dark:hover:bg-green-950/30 rounded-3xl transition-all flex items-center gap-4"
@@ -924,7 +924,7 @@ export default function Subscription({
                 </button>
 
                 <a
-                  href={`https://wa.me/918677994666?text=Hi%20Guddu,%20I%20want%20to%20buy%20the%20${encodeURIComponent(selectedPlanForPayment.name)}%20Premium%20Plan%20for%20my%20restaurant%20(Restaurant%20Code:%20${encodeURIComponent(restaurantCode)})`}
+                  href={`https://wa.me/917564876666?text=Hi,%20I%20want%20to%20buy%20the%20${encodeURIComponent(selectedPlanForPayment.name)}%20Premium%20Plan%20for%20my%20restaurant%20(Restaurant%20Code:%20${encodeURIComponent(restaurantCode)})`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="p-4 bg-green-50 hover:bg-green-100/80 dark:bg-green-950/20 dark:hover:bg-green-950/40 border border-green-100 dark:border-green-900/40 rounded-2xl flex items-center gap-4 transition-all text-left active:scale-[0.98] w-full"

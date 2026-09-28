@@ -151,7 +151,7 @@ export default function BlockedScreen({ blockedUntilEpoch, warningCount, userId,
           {/* Contact info */}
           <div className="text-center">
             <p className="text-slate-400 text-xs font-bold">Please contact admin for support</p>
-            <p className="text-slate-300 text-xs font-black mt-0.5 break-all">gudduk483@gmail.com</p>
+            <p className="text-slate-300 text-xs font-black mt-0.5 break-all">siyabill90@gmail.com</p>
           </div>
 
           {/* Unblock Request Form */}

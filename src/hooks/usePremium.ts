@@ -45,7 +45,7 @@ export function usePremium(): PremiumState {
 
   const isPremium = status === 'premium' && expiry > now;
   const isTrial = status === 'trial' && expiry > now;
-  const isExpired = expiry <= now;
+  const isExpired = expiry <= now || status === 'expired' || status === 'cancelled';
 
   const msLeft = Math.max(0, expiry - now);
   const daysLeft = Math.ceil(msLeft / (24 * 60 * 60 * 1000));

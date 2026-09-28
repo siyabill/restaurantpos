@@ -212,6 +212,10 @@ export const cancelBill = async (billId: string, reason: string) => {
     const bill = await db.bills.get(billId);
     if (!bill) throw new Error('Bill not found');
 
+    if (bill.data?.status === 'cancelled') {
+      throw new Error('This bill has already been cancelled.');
+    }
+
     // 1. Mark the bill as cancelled in the data field
     const updatedData = {
       ...(bill.data || {}),

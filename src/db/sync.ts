@@ -548,7 +548,12 @@ export const initDb = async () => {
       gstNumber: existingProfile?.gstNumber || '', 
       fssaiNumber: existingProfile?.fssaiNumber || '', 
       restaurantCode: existingProfile?.restaurantCode || code, 
-      gstPercentage: existingProfile?.gstPercentage || 0 
+      gstPercentage: existingProfile?.gstPercentage || 0,
+      subscriptionStatus: existingProfile?.subscriptionStatus || 'trial',
+      subscriptionPlan: existingProfile?.subscriptionPlan || 'free-trial',
+      subscriptionExpiry: existingProfile?.subscriptionExpiry || (Date.now() + 3 * 24 * 60 * 60 * 1000),
+      activationDate: existingProfile?.activationDate || Date.now(),
+      licenseKey: existingProfile?.licenseKey || ''
     });
   }
 

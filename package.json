@@ -74,8 +74,8 @@
     "publish": [
       {
         "provider": "github",
-        "owner": "Pos483",
-        "repo": "Restaurants-Pos"
+        "owner": "siyabill",
+        "repo": "restaurantpos"
       }
     ],
     "directories": {

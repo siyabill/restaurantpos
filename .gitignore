@@ -16,3 +16,13 @@ playwright-report/
 test-results/
 e2e/.auth/
 coverage/
+
+# Supabase
+supabase/.temp/
+
+# Admin Flutter & portal build artifacts
+siya bill admin/build/
+siya bill admin/.dart_tool/
+siya bill admin/admin-portal/node_modules/
+siya bill admin/admin-portal/dist/
+

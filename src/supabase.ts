@@ -1,7 +1,7 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://lecqxvnznxceonmuqatv.supabase.co';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxlY3F4dm56bnhjZW9ubXVxYXR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg4MjYxMTcsImV4cCI6MjA5NDQwMjExN30.E6vyy-XF-GfmVjkZiWf3WMNX7bsYtj3PuntBCY90KsQ';
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://yatzsfzzjoxyhbjrvjms.supabase.co';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlhdHpzZnp6am94eWhianJ2am1zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0MTIxMTYsImV4cCI6MjEwNTk4ODExNn0.LGCWhSr3cnP2T024rGcdmmL-tb1trg0pFPNiTVZZunY';
 
 let supabaseClient: SupabaseClient | null = null;
 

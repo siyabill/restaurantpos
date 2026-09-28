@@ -53,7 +53,7 @@ export interface DBRestaurantProfile {
   upiEnabled?: boolean;
   thankYouMessage?: string;
   gstPercentage: number;
-  subscriptionStatus?: 'trial' | 'premium';
+  subscriptionStatus?: 'trial' | 'premium' | 'expired' | 'cancelled';
   subscriptionPlan?: 'free-trial' | 'monthly' | 'half-yearly' | 'yearly' | 'lifetime';
   subscriptionExpiry?: number;
   licenseKey?: string;

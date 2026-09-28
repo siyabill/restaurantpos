@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { useLiveQuery, db, deductStockForBill, recordCustomerCredit, normalizePhone, getNextBillNumber, searchCustomersUnified, findCustomerByPhone, CustomerSearchResult } from '../db';
+import { useLiveQuery, db, deductStockForBill, recordCustomerCredit, normalizePhone, getNextBillNumber, searchCustomersUnified, findCustomerByPhone, CustomerSearchResult, upsertPosCustomer } from '../db';
 import { Table } from '../types';
 import { Printer, Banknote, CreditCard, Smartphone, Clock, UserPlus, Tag, AlertCircle } from 'lucide-react';
 import { ThermalPrinter } from '../printer';
@@ -168,6 +168,11 @@ export default function Billing({ tables, onSettleBill }: Props) {
       });
 
       await deductStockForBill(billId, selectedTable.orders, currentSeq);
+
+      // Save/update customer in POS customer directory
+      if (customerName.trim() && customerPhone.trim()) {
+        await upsertPosCustomer(customerName.trim(), customerPhone.trim(), total);
+      }
 
       if (paymentMethod === 'Credit') {
         await recordCustomerCredit(customerName, customerPhone, total, billId, currentSeq);

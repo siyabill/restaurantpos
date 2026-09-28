@@ -423,7 +423,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
         style={{ opacity: splashPhase === 'done' ? 1 : 0, transform: splashPhase === 'done' ? 'translateY(0)' : 'translateY(-10px)' }}
       >
         <a
-          href="https://wa.me/918677994666?text=Hi%20Guddu,%20I%20need%20help%20with%20Siya%20Bill%20POS"
+          href="https://wa.me/917564876666?text=Hi,%20I%20need%20help%20with%20Siya%20Bill%20POS"
           target="_blank"
           rel="noopener noreferrer"
           className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/60 dark:bg-slate-800/60 hover:bg-white dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-semibold backdrop-blur-md border border-slate-200/50 dark:border-slate-700/50 transition-all"

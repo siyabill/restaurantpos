@@ -436,7 +436,7 @@ export default function PublicOrdering({ restaurantCode, tableId, isOnline }: Pr
           setActiveMobileTab('track');
 
           // Trigger UPI payment app intent automatically
-          const upiUrl = `upi://pay?pa=${restaurantUpiId || '8677994666@upi'}&pn=${encodeURIComponent(restaurantName)}&am=${cartSubtotal}&cu=INR`;
+          const upiUrl = `upi://pay?pa=${restaurantUpiId || '7564876666@upi'}&pn=${encodeURIComponent(restaurantName)}&am=${cartSubtotal}&cu=INR`;
           window.location.href = upiUrl;
         }
       }
@@ -868,7 +868,7 @@ export default function PublicOrdering({ restaurantCode, tableId, isOnline }: Pr
                       <div className="hidden sm:flex justify-center">
                         <div className="p-3 bg-white rounded-xl border border-gray-200 shadow-inner">
                           <QRCodeSVG
-                            value={`upi://pay?pa=${restaurantUpiId || '8677994666@upi'}&pn=${encodeURIComponent(restaurantName)}&am=${cartSubtotal}&cu=INR`}
+                            value={`upi://pay?pa=${restaurantUpiId || '7564876666@upi'}&pn=${encodeURIComponent(restaurantName)}&am=${cartSubtotal}&cu=INR`}
                             size={120} level="H" />
                         </div>
                       </div>
