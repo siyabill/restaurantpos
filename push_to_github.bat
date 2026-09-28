@@ -1,16 +1,23 @@
 @echo off
-echo Initializing Git...
-git init
-echo Adding files...
-git add .
-echo Committing...
-git commit -m "Initial POS system with Auto-Update and Virtual Keyboard"
-echo Setting branch to main...
-git branch -M main
-echo Adding remote origin...
-git remote remove origin >nul 2>&1
-git remote add origin https://github.com/siyabill/restaurantpos.git
-echo Pushing to GitHub...
+set "PATH=%PATH%;C:\Users\khana\AppData\Local\GitHubDesktop\app-3.6.4\resources\app\git\cmd"
+echo ========================================================
+echo   Siya Bill POS - Push to GitHub
+echo   Target: https://github.com/siyabill/restaurantpos.git
+echo ========================================================
+echo.
+echo Pushing committed code to GitHub...
+echo If prompted, please sign into your GitHub account (siyabill) in the browser.
+echo.
 git push -u origin main
-echo Done! Now you can publish the release on GitHub.
+echo.
+if %ERRORLEVEL% EQU 0 (
+    echo ========================================================
+    echo   SUCCESS! All code has been pushed to GitHub.
+    echo ========================================================
+) else (
+    echo ========================================================
+    echo   Push failed. Please check your credentials or access rights.
+    echo ========================================================
+)
+echo.
 pause
