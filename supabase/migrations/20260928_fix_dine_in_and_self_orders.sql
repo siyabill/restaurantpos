@@ -21,6 +21,10 @@ CREATE TABLE IF NOT EXISTS public.self_orders (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Ensure id default is set if table already existed without default
+ALTER TABLE IF EXISTS public.self_orders 
+    ALTER COLUMN id SET DEFAULT gen_random_uuid();
+
 -- Enable RLS on self_orders
 ALTER TABLE public.self_orders ENABLE ROW LEVEL SECURITY;
 

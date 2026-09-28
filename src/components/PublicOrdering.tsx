@@ -372,7 +372,16 @@ export default function PublicOrdering({ restaurantCode, tableId, isOnline }: Pr
 
     try {
       if (tableId) {
+        const orderId = (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function')
+          ? crypto.randomUUID()
+          : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+              const r = (Math.random() * 16) | 0;
+              const v = c === 'x' ? r : (r & 0x3) | 0x8;
+              return v.toString(16);
+            });
+
         const { error } = await supabase.from('self_orders').insert({
+          id: orderId,
           app_user_id: tenantId,
           table_id: String(tableId),
           customer_name: finalCustomerName,
