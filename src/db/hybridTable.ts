@@ -372,12 +372,24 @@ export class HybridTable<T extends BaseDBRecord> {
       return 1;
     }
 
-    const previousRecord = await this.dexieTable.get(id);
-    if (!previousRecord) throw new Error('Record not found locally');
+    let previousRecord = await this.dexieTable.get(id);
+    if (!previousRecord && typeof id === 'number') {
+      previousRecord = await this.dexieTable.get(String(id));
+    } else if (!previousRecord && typeof id === 'string' && !isNaN(Number(id))) {
+      previousRecord = await this.dexieTable.get(Number(id));
+    }
+
+    if (!previousRecord) {
+      if (this.tableName === 'active_orders') {
+        previousRecord = { id: Number(id), status: 'available', orders: [] } as unknown as T;
+      } else {
+        throw new Error('Record not found locally');
+      }
+    }
     const updatedRecord = { ...previousRecord, ...changes };
 
     // 1. Save locally in Dexie first (to prevent double printing on Supabase Realtime echo)
-    await this.dexieTable.update(id, changes as any);
+    await this.dexieTable.put(updatedRecord);
     notifyGlobalChange(this.tableName);
 
     if (!skipSync) {

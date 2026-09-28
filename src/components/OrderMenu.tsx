@@ -645,7 +645,9 @@ export default function OrderMenu({ tables, selectedTableId, onSelectTable, onUp
       
       await db.activeOrders.update(table.id, updates);
       setPendingKotNum(null);
-      showToast('Saved to Digital KDS');
+      setShowMobileCart(false);
+      onSelectTable(null); // Return to Table Grid
+      showToast('KOT digital KDS screen par bhej diya gaya', 'success');
     } catch (e) {
       console.error(e);
       showToast('Failed to save to KDS', 'error');
@@ -670,6 +672,27 @@ export default function OrderMenu({ tables, selectedTableId, onSelectTable, onUp
       }
     }
 
+    // Only print items that haven't been printed yet
+    const newItemsToPrint = localOrders.map(o => ({
+      ...o,
+      quantity: o.quantity - (o.printedQuantity || 0)
+    })).filter(o => o.quantity > 0);
+
+    if (newItemsToPrint.length === 0) {
+      showToast('All items have already been printed. Use KDS to re-print.', 'info');
+      return;
+    }
+
+    let kotNum = pendingKotNum;
+    if (!kotNum) {
+      try {
+        kotNum = await getNextKotNumber();
+        setPendingKotNum(kotNum);
+      } catch (_) {
+        kotNum = String(Date.now()).slice(-4);
+      }
+    }
+
     // Pre-check if KOT printer is connected
     let printerConnected = await ThermalPrinter.isKOTPrinterConnected();
     if (!printerConnected) {
@@ -678,29 +701,15 @@ export default function OrderMenu({ tables, selectedTableId, onSelectTable, onUp
     }
 
     if (!printerConnected) {
-      showToast('⚠️ Printer connect nahi hai! KOT print karne ke liye kripya pehle printer connect karein.', 'error');
+      // Rather than blocking user, open KDS fallback confirmation
+      setPendingKdsData({ newItemsToPrint, kotNum });
+      setShowKdsConfirm(true);
       return;
     }
 
     isPrintingRef.current = true;
     setIsPrinting(true);
     try {
-      // Only print items that haven't been printed yet
-      const newItemsToPrint = localOrders.map(o => ({
-        ...o,
-        quantity: o.quantity - (o.printedQuantity || 0)
-      })).filter(o => o.quantity > 0);
-
-      if (newItemsToPrint.length === 0) {
-        showToast('All items have already been printed. Use KDS to re-print.', 'info');
-        return;
-      }
-
-      let kotNum = pendingKotNum;
-      if (!kotNum) {
-        kotNum = await getNextKotNumber();
-        setPendingKotNum(kotNum);
-      }
       const isMergedTable = effectiveMergedIds.length > 0;
       const kotTableLabel = isMergedTable ? `${table.id} (+${effectiveMergedIds.join(', ')})` : table.id;
       const printSuccess = await ThermalPrinter.printKOT(kotTableLabel, newItemsToPrint, kotNum);
@@ -735,8 +744,12 @@ export default function OrderMenu({ tables, selectedTableId, onSelectTable, onUp
         }
         
         await db.activeOrders.update(table.id, updates);
+        setShowMobileCart(false);
+        onSelectTable(null); // Return to Table Grid
       } else {
-        showToast('⚠️ KOT print nahi ho saka. Kripya printer check karein.', 'error');
+        setPendingKdsData({ newItemsToPrint, kotNum });
+        setShowKdsConfirm(true);
+        showToast('⚠️ KOT print nahi ho saka. Digital KDS me save karein.', 'error');
       }
     } catch (e: any) {
       console.error('KOT Error:', e);
@@ -751,11 +764,54 @@ export default function OrderMenu({ tables, selectedTableId, onSelectTable, onUp
     flushPendingUpdate();
     if (localOrders.length === 0 || isPrinting) return;
     try {
-      await onPlaceOrder(table.id, localOrders);
+      // 1. Send any new items to KDS so Kitchen receives the placed order
+      const newItemsToPrint = localOrders.map(o => ({
+        ...o,
+        quantity: o.quantity - (o.printedQuantity || 0)
+      })).filter(o => o.quantity > 0);
+
+      if (newItemsToPrint.length > 0) {
+        let kotNum = pendingKotNum;
+        if (!kotNum) {
+          try {
+            kotNum = await getNextKotNumber();
+          } catch (_) {
+            kotNum = String(Date.now()).slice(-4);
+          }
+        }
+        const isCloudPrintSendingEnabled = localStorage.getItem('enableCloudPrintSending') !== 'false';
+        const isMergedTable = effectiveMergedIds.length > 0;
+        const kdsTableLabel = isMergedTable ? `Table ${table.id} (+${effectiveMergedIds.join(', ')})` : `Table ${table.id}`;
+
+        try {
+          await db.kdsOrders.add({
+            id: Date.now().toString() + (isCloudPrintSendingEnabled ? '' : '-nocp'),
+            tableOrType: kdsTableLabel,
+            items: newItemsToPrint,
+            timestamp: Date.now(),
+            status: 'pending',
+            kotNumber: kotNum
+          });
+        } catch (kdsErr) {
+          console.warn('Failed to auto-send to KDS:', kdsErr);
+        }
+      }
+
+      // Mark all current quantities as printed/sent
+      const updatedOrders = localOrders.map(o => ({
+        ...o,
+        printedQuantity: o.quantity
+      }));
+      setLocalOrders(updatedOrders);
+
+      await onPlaceOrder(table.id, updatedOrders);
+      setPendingKotNum(null);
+      setShowMobileCart(false);
+      onSelectTable(null); // Return to Table Grid
       showToast(table.status === 'occupied' ? 'Order updated successfully!' : 'Order placed successfully!', 'success');
-    } catch (e) {
+    } catch (e: any) {
       console.error('Failed to place/update order:', e);
-      showToast('Failed to save order', 'error');
+      showToast(e?.message || 'Failed to save order', 'error');
     }
   };
 

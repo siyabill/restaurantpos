@@ -61,7 +61,10 @@ export default function TableGrid({ tables, onSelectTable, onAddTable, onOpenMer
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
           {tables.map((table) => {
             const isOccupied = table.status === 'occupied';
-            const totalAmount = table.orders.reduce((sum, item) => sum + (item.menuItem.price * item.quantity), 0);
+            const totalAmount = (table.orders || []).reduce((sum, item) => {
+              const p = item?.menuItem?.price ?? item?.price ?? 0;
+              return sum + (p * (item?.quantity || 1));
+            }, 0);
             const mergedIds = getTableMergedIds(table);
             const isMerged = mergedIds.length > 0;
 

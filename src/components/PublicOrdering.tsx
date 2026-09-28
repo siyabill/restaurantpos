@@ -164,7 +164,11 @@ export default function PublicOrdering({ restaurantCode, tableId, isOnline }: Pr
       }
     } catch (err: any) {
       console.error('PIN Verification Error:', err);
-      setPinError('Failed to verify PIN. Please try again.');
+      if (err?.code === 'PGRST202') {
+        setPinError('Table PIN verify karne ke liye Supabase me verify_table_pin function create karein.');
+      } else {
+        setPinError(err?.message || 'Failed to verify PIN. Please try again.');
+      }
     } finally {
       setVerifying(false);
     }
@@ -351,11 +355,15 @@ export default function PublicOrdering({ restaurantCode, tableId, isOnline }: Pr
           setPlacingOrder(false);
           return;
         }
-      } catch (err) {
+      } catch (err: any) {
         console.error('Pre-order PIN verification failed:', err);
-        alert('Security verification failed. Please try again.');
-        setPlacingOrder(false);
-        return;
+        if (err?.code === 'PGRST202') {
+          console.warn('verify_table_pin RPC not found, allowing previously verified PIN to proceed');
+        } else {
+          alert('Security verification failed. Please try again.');
+          setPlacingOrder(false);
+          return;
+        }
       }
     }
 

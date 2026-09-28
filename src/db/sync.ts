@@ -121,7 +121,7 @@ export const pullTable = async (tableName: string, userId: string) => {
           }
           const localId = String(localItem.id);
           if (!remoteIds.has(localId)) {
-            if (tableName === 'restaurant_profile' || tableName === 'restaurant_settings') continue;
+            if (tableName === 'restaurant_profile' || tableName === 'restaurant_settings' || tableName === 'active_orders') continue;
             if (localItem.id !== undefined) {
               await dexieTable.delete(localItem.id);
             }
